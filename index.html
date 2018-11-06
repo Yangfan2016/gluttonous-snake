@@ -1,39 +1,101 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-   <meta name="viewport" content="width-device-width,initial-scale=1.0,user-scalable=no" />
-   <meta charset="UTF-8" />
-   <title>贪吃蛇</title>
-   <style>
-   *{padding:0;margin:0;}
-   	html,body{width:100%;height:100%;overflow:hidden;}
-   	body{background:#ccc;}
-	.title{padding:10px;text-align:center;font-size:24px;color:#26f;text-shadow:0 0 5px #4bab78;}
-	.title>small{padding:0 15px;font-size:14px;font-weight:400;}
-	.panel{width:500px;margin:10px auto;position:relative;}
-   	#canvas{display:block;border:1px solid #fff;background:#fff;box-shadow:0 0 10px #000;}
-   	.control{position:absolute;top:0;left:350px;}
-   	.btn{width:80px;height:30px;}
-   	.control>.container{padding:5px 10px;margin-bottom:15px;text-align:center;}
-   	.get_score,.max_score{display:block;width:80px;padding:5px 10px;text-align:center;border:1px solid #ccc;background:#26f;color:#fff;}
-   </style>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+	<meta charset="UTF-8" />
+	<title>贪吃蛇</title>
+	<style>
+		* {
+			padding: 0;
+			margin: 0;
+		}
+
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+
+		body {
+			background: #ccc;
+		}
+
+		.title {
+			padding: 10px;
+			text-align: center;
+			font-size: 24px;
+			color: #26f;
+			text-shadow: 0 0 5px #4bab78;
+		}
+
+		.title>small {
+			padding: 0 15px;
+			font-size: 14px;
+			font-weight: 400;
+		}
+
+		.panel {
+			width: 500px;
+			margin: 10px auto;
+			position: relative;
+		}
+
+		#canvas {
+			display: block;
+			border: 1px solid #fff;
+			background: #fff;
+			box-shadow: 0 0 10px #000;
+		}
+
+		.control {
+			position: absolute;
+			top: 0;
+			left: 350px;
+		}
+
+		.btn {
+			width: 80px;
+			height: 30px;
+		}
+
+		.control>.container {
+			padding: 5px 10px;
+			margin-bottom: 15px;
+			text-align: center;
+		}
+
+		.get_score,
+		.max_score {
+			display: block;
+			width: 80px;
+			padding: 5px 10px;
+			text-align: center;
+			border: 1px solid #ccc;
+			background: #26f;
+			color: #fff;
+		}
+	</style>
 </head>
+
 <body>
-<h2 class="title">贪吃蛇<small>键盘上下左右控制</small></h2>
-<div class="panel">
-	<canvas id="canvas">您的浏览器不支持canvas</canvas>
-	<div class="control">
-		<div class="container">
-			<label for="">score: </label><span id="get_score" class="get_score">得分</span>
-		</div>
-		<div class="container">
-			<label for="">maxscore: </label><span id="max_score" class="max_score">最高分</span>
-		</div>
-		<div class="container">
-			<button id="reset" class="btn">重新开始</button>
+	<h2 class="title">贪吃蛇<small>键盘上下左右控制</small></h2>
+	<div class="panel">
+		<canvas id="canvas">您的浏览器不支持canvas</canvas>
+		<div class="control">
+			<div class="container">
+				<label for="">score: </label><span id="get_score" class="get_score">得分</span>
+			</div>
+			<div class="container">
+				<label for="">maxscore: </label><span id="max_score" class="max_score">最高分</span>
+			</div>
+			<div class="container">
+				<button id="reset" class="btn">重新开始</button>
+			</div>
 		</div>
 	</div>
-</div>
-<script src="./src/index.js"></script>
+	<script src="./dist/snake.min.js"></script>
 </body>
+
 </html>

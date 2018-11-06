@@ -1,0 +1,21 @@
+{
+  "name": "gluttonous-snake",
+  "version": "1.0.0",
+  "description": "This is a game of gluttonous snake",
+  "main": "dist/snake.min.js",
+  "repository": "https://github.com/Yangfan2016/gluttonous-snake.git",
+  "author": "yangfan2016 <15234408101@163.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "rollup --config rollup.config.js"
+  },
+  "devDependencies": {
+    "rollup": "^0.67.0",
+    "rollup-plugin-json": "^3.1.0",
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-terser": "^3.0.0",
+    "rollup-plugin-typescript2": "^0.17.2",
+    "typescript": "^3.1.6"
+  }
+}
