@@ -21,81 +21,119 @@
 		body {
 			background: #ccc;
 		}
-
-		.title {
-			padding: 10px;
-			text-align: center;
-			font-size: 24px;
-			color: #26f;
-			text-shadow: 0 0 5px #4bab78;
+		.c-panel{
+			padding: 20px 0;
 		}
-
-		.title>small {
-			padding: 0 15px;
-			font-size: 14px;
-			font-weight: 400;
-		}
-
-		.panel {
-			width: 500px;
-			margin: 10px auto;
-			position: relative;
-		}
-
-		#canvas {
-			display: block;
-			border: 1px solid #fff;
-			background: #fff;
-			box-shadow: 0 0 10px #000;
-		}
-
-		.control {
-			position: absolute;
-			top: 0;
-			left: 350px;
-		}
-
-		.btn {
-			width: 80px;
-			height: 30px;
-		}
-
-		.control>.container {
-			padding: 5px 10px;
-			margin-bottom: 15px;
-			text-align: center;
-		}
-
-		.get_score,
-		.max_score {
-			display: block;
+		.c-panel .score {
+			display: inline-block;
 			width: 80px;
 			padding: 5px 10px;
-			text-align: center;
-			border: 1px solid #ccc;
-			background: #26f;
-			color: #fff;
+			background-color: #524d4da1;			
+			color: #f9f9f9;
+		}
+		.c-drawer{
+			background-color: #5585ff;
+		}
+		.c-controller .btn{
+			padding:5px 10px;
+			border:none;
 		}
 	</style>
 </head>
 
 <body>
-	<h2 class="title">贪吃蛇<small>键盘上下左右控制</small></h2>
-	<div class="panel">
-		<canvas id="canvas">您的浏览器不支持canvas</canvas>
-		<div class="control">
-			<div class="container">
-				<label for="">score: </label><span id="get_score" class="get_score">得分</span>
-			</div>
-			<div class="container">
-				<label for="">maxscore: </label><span id="max_score" class="max_score">最高分</span>
-			</div>
-			<div class="container">
-				<button id="reset" class="btn">重新开始</button>
-			</div>
+	<div class="container">
+		<div class="c-panel">
+			<span id="get_score" class="score">000</span>
+			<span id="max_score" class="score">000</span>
+		</div>
+		<div class="c-drawer">
+			<canvas id="canvas">您的浏览器不支持canvas</canvas>
+		</div>
+		<div class="c-controller">
+			<button id="btn_reset" class="btn">Restart</button>
+			<!-- TODO -->
 		</div>
 	</div>
 	<script src="./dist/snake.min.js"></script>
+	<script>
+		// DOM加载完成
+		function init(e) {
+			let canvas = document.getElementById("canvas");
+			let ctx = canvas.getContext("2d");
+			let btnReset = document.getElementById("btn_reset");
+			let labGet = document.getElementById("get_score");
+			let labMax = document.getElementById("max_score");
+
+			const VW = window.innerWidth;
+
+			canvas.width = VW;
+			canvas.height = VW;
+
+			let timer = null;
+
+			let game = new SnakeGame(canvas, {
+				setScore: (score) => {
+					labGet.innerHTML = score;
+				},
+				setMaxScore: (maxScore) => {
+					labMax.innerHTML = maxScore;
+				},
+				clearTimer: () => {
+					clearInterval(timer);
+				}
+			});
+
+			// 初始化UI面板
+			labGet.innerHTML = game.score;
+			labMax.innerHTML = game.maxScore;
+
+			//  用户操作UI
+			document.addEventListener("keydown", function (ev) {
+				// 左
+				if (ev.keyCode === 37) {
+					clearInterval(timer);
+					timer = setInterval(function () {
+						game.changeToDir('L');
+					}, 1000 / game.fps);
+				}
+				// 上
+				if (ev.keyCode === 38) {
+					clearInterval(timer);
+					timer = setInterval(function () {
+						game.changeToDir('T');
+					}, 1000 / game.fps);
+				}
+				// 右
+				if (ev.keyCode === 39) {
+					clearInterval(timer);
+					timer = setInterval(function () {
+						game.changeToDir('R');
+					}, 1000 / game.fps);
+				}
+				// 下
+				if (ev.keyCode === 40) {
+					clearInterval(timer);
+					timer = setInterval(function () {
+						game.changeToDir('D');
+					}, 1000 / game.fps);
+				}
+			});
+
+			// 重新开始
+			btnReset.onclick = function () {
+				clearInterval(timer);
+				alert("Ready Go!!!");
+				// 页面初始化
+				game.initFunc();
+				game.maxScore = 0;
+				game.arrScore = [];
+				labMax.innerHTML = game.maxScore + '分';
+			};
+		}
+
+		window.addEventListener("DOMContentLoaded", init, false);
+	</script>
 </body>
 
 </html>

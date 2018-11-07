@@ -8,7 +8,8 @@ export default {
     input: "./src/index.ts",
     output: {
         file: pkg.main,
-        format: 'iife',
+        format: 'umd',
+        name:"SnakeGame",
         sourcemap:true,
     },
     plugins: [
