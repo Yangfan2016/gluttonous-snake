@@ -8,10 +8,11 @@ interface iCircle {
 }
 
 class SnakeGame {
+    timer: any
     cellWidth: number
     cellNum: number
     gridWidth: number
-    circleRadius:number
+    circleRadius: number
     flag: number[][] // 占位坐标 (10,10,290,290)
     ctx: CanvasRenderingContext2D
     cx: number
@@ -28,53 +29,32 @@ class SnakeGame {
     maxScore: number
     setScore: Function
     setMaxScore: Function
-    clearTimer: Function
     constructor(canvas: HTMLCanvasElement, {
         setScore,
         setMaxScore,
-        clearTimer,
     }) {
         // init
         this.ctx = canvas.getContext("2d");
-        this.gridWidth = ~~(canvas.width);
         this.cellWidth = 10;
+        this.timer = null;
+
+        let VW = ~~canvas.width;
+        // 凑整数 10的倍数
+        if (VW % this.cellWidth !== 0) {
+            VW = VW - VW % this.cellWidth;
+            canvas.width = VW;
+            canvas.height = VW;
+        }
+        this.gridWidth = VW;
         this.cellNum = ~~(this.gridWidth / this.cellWidth);
         this.circleRadius = ~~(this.cellWidth / 2);
 
         this.flag = [];
-        this.cx = 60;
-        this.cy = 240;
-        this.arrX = [];
-        this.arrY = [];
-        this.snake_len = (3 - 1);
-        this.fps = 6;
-        this.score = 0;
-        this.count = 0;
-        this.arrScore = [];
-        this.maxScore = 0;
 
         this.setScore = setScore;
         this.setMaxScore = setMaxScore;
-        this.clearTimer = clearTimer;
 
-        // 队列数据初始化
-        for (let i = 0, len = this.snake_len; i < len; i++) {
-            this.arrX.push(60);
-            this.arrY.push(260 - this.cellWidth * i); // [260,250]
-        }
-
-        // 页面初始化
-        this.coord();
-        this.drawSnake(this.cx, this.cy, 2);
-        this.coordLabel(this.cx, this.cy, this.arrX, this.arrY);
-        // 生成苹果
-        this.ax = Math.floor(Math.random() * 270 + this.cellWidth);
-        this.ay = Math.floor(Math.random() * 270 + this.cellWidth);
-        while (this.flag[this.ax][this.ay] === 1) {
-            this.ax = Math.floor(Math.random() * 270 + this.cellWidth);
-            this.ay = Math.floor(Math.random() * 270 + this.cellWidth);
-        }
-        this.drawApple(this.ax, this.ay);
+        this.initFunc();
     }
     // 绘制 圆
     circle(ctx: CanvasRenderingContext2D, data: iCircle, s_style: string, f_style: string): void {
@@ -108,9 +88,9 @@ class SnakeGame {
     // 存储 占位坐标数据
     coordLabel(cx: number, cy: number, arrX: number[], arrY: number[]): void {
         // 清空所有数据，初始化
-        for (let i = 0; i < this.gridWidth; i++) {
+        for (let i = 0; i <= this.gridWidth; i += this.cellWidth) {
             this.flag[i] = [];
-            for (let j = 0; j < this.gridWidth; j++) {
+            for (let j = 0; j <= this.gridWidth; j += this.cellWidth) {
                 this.flag[i][j] = 0;
             }
         }
@@ -121,10 +101,14 @@ class SnakeGame {
             this.flag[(+arrX[k])][(+arrY[k])] = 1;
         }
     }
+    // 生成 随机苹果坐标
+    madeRandomCoord() {
+        return ~~(Math.random() * (this.cellNum - 1) + 1) * this.cellWidth;
+    }
     // 边界 碰撞检测
     isStop(cx: number, cy: number): boolean {
         let stop = false;
-        if (cx >= 297 || cy >= 297 || cx <= 3 || cy <= 3) {
+        if (cx >= this.gridWidth || cy >= this.gridWidth || cx <= this.cellWidth >> 1 || cy <= this.cellWidth >> 1) {
             stop = true;
         }
         return stop;
@@ -138,7 +122,7 @@ class SnakeGame {
             r: this.circleRadius,
             start: 0,
             end: 2 * Math.PI,
-        }, "#333", "#26f");
+        }, "transparent", "#26f");
         // 蛇身
         for (let i = len - 1; i >= 0; i--) {
             this.circle(this.ctx, {
@@ -147,7 +131,7 @@ class SnakeGame {
                 r: this.circleRadius,
                 start: 0,
                 end: 2 * Math.PI,
-            }, "#333", '#0c3');
+            }, "transparent", '#0c3');
         }
     }
     // 绘制苹果
@@ -158,7 +142,7 @@ class SnakeGame {
             r: this.circleRadius,
             start: 0,
             end: 2 * Math.PI,
-        }, "#333", "#f20");
+        }, "transparent", "#f20");
     }
     // 运动 转换方向
     moveByDir(dir: string): void {
@@ -178,25 +162,64 @@ class SnakeGame {
         };
         strageMode[dir]();
     }
+    // 操作
+    startToMove(dir: string): void {
+        clearInterval(this.timer);
+        this.timer = setInterval(() => {
+            this.changeToDir(dir);
+        }, 1000 / this.fps);
+    }
+    // 向左
+    goLeft() {
+        this.startToMove("L");
+    }
+    // 向上
+    goTop() {
+        this.startToMove("T");
+    }
+    // 向右
+    goRight() {
+        this.startToMove("R");
+    }
+    // 向下
+    goDown() {
+        this.startToMove("D");
+    }
     // 页面初始化
     initFunc(): void {
-        this.cx = 60;
-        this.cy = 240;
+        clearInterval(this.timer);
+
+        this.snake_len = 2;
         this.fps = 6;
-        this.snake_len = (3 - 1);
+        this.cx = 3 * this.cellWidth;
+        this.cy = this.gridWidth - this.cx;
         this.arrX = [];
         this.arrY = [];
-        for (let i = 0, len = this.snake_len; i < len; i++) {
-            this.arrX.push(60);
-            this.arrY.push(260 - this.cellWidth * i);  // [260,250]
-        }
         this.score = 0;
         this.count = 0;
-        this.setScore(this.score);
+        this.arrScore = [];
+        this.maxScore = 0;
+
+        // 队列数据初始化
+        for (let i = 0, len = this.snake_len; i < len; i++) {
+            this.arrX.push(this.cx);
+            this.arrY.push((this.cy + this.cellWidth * this.snake_len) - this.cellWidth * i); // [260,250]
+        }
+
+        // 页面初始化
         this.ctx.clearRect(0, 0, this.gridWidth, this.gridWidth);
         this.coord();
         this.drawSnake(this.cx, this.cy, this.snake_len);
+        this.coordLabel(this.cx, this.cy, this.arrX, this.arrY);
+        // 生成苹果
+        this.ax = this.madeRandomCoord();
+        this.ay = this.madeRandomCoord();
+        while (this.flag[this.ax][this.ay] === 1) {
+            this.ax = this.madeRandomCoord();
+            this.ay = this.madeRandomCoord();
+        }
         this.drawApple(this.ax, this.ay);
+        this.setScore(this.score);
     }
     // 主函数
     changeToDir(dir: string): void {
@@ -206,8 +229,8 @@ class SnakeGame {
         this.drawApple(this.ax, this.ay);
         // 撞墙检测
         if (this.isStop(this.cx, this.cy)) {
-            this.clearTimer();
-            alert("Game Over!!!");
+            clearInterval(this.timer);
+            alert(`Game Over!!!\n本次得分：${this.score}\n最高分：${this.maxScore}`);
             this.initFunc();
             return;
         }
@@ -221,7 +244,7 @@ class SnakeGame {
         // 执行运动语句
         this.moveByDir(dir);    // 230   220
         // 吃苹果
-        if (Math.abs(this.cx - this.ax) <= 7 && Math.abs(this.cy - this.ay) <= 7) {
+        if (this.cx === this.ax && this.cy === this.ay) {
             // 计算得分及最高分
             this.count++;
             this.score = this.count * 100;
@@ -233,19 +256,19 @@ class SnakeGame {
             if (this.count % 5 === 0) {
                 this.fps = this.fps + 1;
                 // 重新生成苹果坐标
-                this.ax = Math.floor(Math.random() * 2*this.cellWidth) + 260;
-                this.ay = Math.floor(Math.random() * 2*this.cellWidth) + 260;
+                this.ax = this.madeRandomCoord();
+                this.ay = this.madeRandomCoord();
                 while (this.flag[this.ax][this.ay] === 1) {
-                    this.ax = Math.floor(Math.random() * 2*this.cellWidth) + 260;
-                    this.ay = Math.floor(Math.random() * 2*this.cellWidth) + 260;
+                    this.ax = this.madeRandomCoord();
+                    this.ay = this.madeRandomCoord();
                 }
             } else {
                 // 重新生成苹果坐标
-                this.ax = Math.floor(Math.random() * 270 + this.cellWidth);
-                this.ay = Math.floor(Math.random() * 270 + this.cellWidth);
+                this.ax = this.madeRandomCoord();
+                this.ay = this.madeRandomCoord();
                 while (this.flag[this.ax][this.ay] === 1) {
-                    this.ax = Math.floor(Math.random() * 270 + this.cellWidth);
-                    this.ay = Math.floor(Math.random() * 270 + this.cellWidth);
+                    this.ax = this.madeRandomCoord();
+                    this.ay = this.madeRandomCoord();
                 }
             }
 
@@ -257,10 +280,10 @@ class SnakeGame {
         }
         // 记录蛇的占位坐标
         this.coordLabel(this.cx, this.cy, this.arrX, this.arrY);
-        // 幢到自己身体检测
+        // 撞到自己身体检测
         for (let m = 0, len = this.arrX.length - 1; m < len; m++) {
             if (this.cx === this.arrX[m] && this.cy === this.arrY[m]) {
-                this.clearTimer();
+                clearInterval(this.timer);
                 alert('蛇撞到自己了');
                 this.initFunc();
             }
