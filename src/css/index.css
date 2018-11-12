@@ -78,11 +78,11 @@ body {
     position: absolute;
     background-color: #777;
 }
-.dir:focus{
+.dir:active{
     background-color: #5f5f5f;
     border-color: #000;
 }
-.middle:focus{
+.middle:active{
     background-color: #959595;
     border-color: #626262;
 }
